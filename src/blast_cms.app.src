@@ -1,0 +1,14 @@
+{application,blast_cms,
+ [
+  {description, "Blast CMS - a Basic Markdown-based CMS in Nitrogen"},
+  {vsn, git},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+				  nitrogen_core
+                 ]},
+  {env, []},
+  {licenses, ["MIT"]},
+  {links, [{"Github", "https://github.com/choptastic/blast_cms"}]}
+ ]}.

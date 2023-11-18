@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[[[site:title()]]]</title>
+
+	<script src='/nitrogen/jquery.js' type='text/javascript' charset='utf-8'></script>
+	<script src='/nitrogen/jquery-ui.min.js' type='text/javascript' charset='utf-8'></script>
+	<script src='/nitrogen/livevalidation.min.js' type='text/javascript' charset='utf-8'></script>
+	<script src='/nitrogen/nitrogen.min.js' type='text/javascript' charset='utf-8'></script>
+	<script src='/nitrogen/bert.min.js' type='text/javascript' charset='utf-8'></script>
+
+	<link rel="stylesheet" href="/nitrogen/jquery-ui/jquery.ui.all.css" type="text/css" media="screen" charset="utf-8" />
+	<!--<link rel="stylesheet" href="/nitrogen/nitrogen.css" />-->
+	<!--<link rel="stylesheet" href="/css/style.css" />-->
+    <link rel="stylesheet" href="/css/bulma.min.css"> <!-- Include the Bulma CSS file -->
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="theme-color" content="#ffffff">
+
+    <style>
+		h1 {
+			font-size: 2rem;
+			font-weight: 600;
+			line-height: 1.125;
+			margin-bottom: 1.5rem;
+		}
+		
+		.home-details {
+			font-size:1.5em;
+		}
+
+		.orientation-left .column:first-child,
+		.orientation-right .column:last-child {
+			text-align:center;
+		}
+
+		.orientation-left .column:first-child img {
+			margin-left: 0;
+			margin-right: auto;
+		}
+
+		.orientation-right .column:last-child img {
+			margin-left:auto;
+			margin-right:0;
+		}
+
+		@media screen and (min-width: 769px) {
+			section:first-child {
+				padding-top:15rem;
+			}
+			.navbar-logo {
+				height:100%;
+				transition: height 0.02s;
+			}
+
+			.navbar-logo.navbar-item {
+				height: 200px;
+			}
+
+			.navbar-logo.navbar-item img {
+				height:100%;
+				max-height: 100%;
+			}
+		}
+
+		.section-1 {
+			background: #006480;
+			color: white;
+		}
+
+		.section-1 a:link,
+		.section-1 a:visited {
+			color: #ff6600;
+			text-decoration: underline;
+		} 
+
+		.section-2 {
+			background: #fff;
+			/*color: white;*/
+		}
+		
+		.section-5 {
+			background: #ff6600;
+			color: white;
+		}
+
+		.section-4 {
+			background: #d6e7e6;
+			/*color: white;*/
+		}
+
+		.section-3 {
+			background: #806c5b;
+			color: white;
+		}
+	
+		strong {
+			color: inherit;
+		}
+
+		#footer {
+			text-align:center;
+		}
+		
+		/*
+        .navbar-logo.large {
+            height: 200px;
+            transition: max-height 0.5s;
+        }
+
+        .navbar-logo.small {
+            height: 60px;
+            transition: max-height 0.5s;
+        }
+		*/
+    </style>
+</head>
+<body>
+
+[[[page:navbar()]]]
+
+<div>
+	[[[page:body()]]]
+
+	<section id="footer" class="section [[[page:section_class()]]]">
+		<div class="container">
+			[[[site:copyright()]]]
+		</div>
+	</section>
+
+</div>
+
+<script>
+	const mobileThreshold = 768;
+
+    // JavaScript to handle logo resizing on scroll
+	window.addEventListener('scroll', () => {
+		const logo = document.querySelector('.navbar-logo');
+		if (window.innerWidth >= mobileThreshold) {
+			const scrollPosition = window.scrollY;
+
+			// You can adjust the max and min heights as needed
+			const maxLogoHeight = 200;
+			const minLogoHeight = 60;
+
+			// Calculate the new logo height based on scroll position
+			const newHeight = maxLogoHeight - scrollPosition;
+			
+			// Ensure the logo height stays within the desired range
+			const clampedHeight = Math.max(minLogoHeight, Math.min(maxLogoHeight, newHeight));
+
+			// Set the logo's max-height property to achieve the resizing effect
+			logo.style.height = clampedHeight + 'px';
+		} else {
+			logo.style.height = "auto";
+		}
+			
+    });
+
+/*
+        const logo = document.querySelector('.navbar-logo');
+        if (window.scrollY > 0) {
+            logo.classList.remove('large');
+            logo.classList.add('small');
+        } else {
+            logo.classList.remove('small');
+            logo.classList.add('large');
+        }
+    });
+	*/
+	
+	 // JavaScript to toggle the mobile menu
+    document.addEventListener('DOMContentLoaded', () => {
+        const burger = document.querySelector('.navbar-burger');
+        const menu = document.querySelector('#navbarMenu');
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('is-active');
+            menu.classList.toggle('is-active');
+        });
+    });
+
+	// Function to close the mobile menu
+    function closeMobileMenu() {
+        const burger = document.querySelector('.navbar-burger');
+        const menu = document.querySelector('#navbarMenu');
+        burger.classList.remove('is-active');
+        menu.classList.remove('is-active');
+    }
+
+	// Function to smoothly scroll to the target element
+    function scrollToElement(targetId) {
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            const yOffset = -50; // You can adjust the offset as needed
+            const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    }
+
+	// Event delegation to handle menu item clicks
+    document.querySelector('.navbar-end').addEventListener('click', (event) => {
+        if (event.target.classList.contains('navbar-item')) {
+            closeMobileMenu();
+			const targetId = event.target.getAttribute('href').substring(1); // Extract the target element's ID
+            scrollToElement(targetId);
+			event.preventDefault();
+        }
+    });
+
+	
+
+</script>
+
+</body>
+<script>
+[[[script]]]
+</script>
+</html>
+
