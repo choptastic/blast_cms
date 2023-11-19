@@ -1,9 +1,19 @@
 -module(blast_common).
--include("base.hrl").
+-include("blast.hrl").
+-compile(export_all).
 
 parent_app() ->
     {ok, App} = application:get_application(nitrogen_main_handler),
     App.
+
+blast_priv_dir() ->
+    code:priv_dir(blast_cms).
+
+templates_dir() ->
+    filename:join(blast_priv_dir(), "templates").
+
+template_dir(Filename) ->
+    filename:join(templates_dir(), Filename).
 
 priv_dir() ->
     code:priv_dir(parent_app()).

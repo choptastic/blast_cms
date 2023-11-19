@@ -2,7 +2,8 @@
 %% Copyright 2023 Jesse Gumm
 %% MIT License
 -module(blast_basic).
--include("base.hrl").
+-include("blast.hrl").
+-compile(export_all).
 
 page() ->
     case wf:path_info() of
@@ -23,7 +24,7 @@ is_alphanumeric(Str) ->
 main() ->
     case page() of
         undefined -> web_404:main();
-        _ -> #template{file="priv/templates/blast_basic.html"}
+        _ -> #template{file=blast_common:template_dir("blast_basic.html")}
     end.
 
 sections() ->
