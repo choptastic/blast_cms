@@ -43,7 +43,7 @@ body() ->
 draw_section(Page, Section) ->
     #section{
         html_id=Section,
-        class=[section, section_class()],
+        class=[section, section_classes()],
         body=[
             #panel{class=container, body=[
                 content(Page, Section)
@@ -63,22 +63,20 @@ content(Page, Section) ->
 
     BaseClass = "column is-half home-details",
 
+    OrientationClass = wf:to_binary(["orientation-",Orientation]),
     {Left, Right} = ?WF_IF(Orientation==left, {Picture, Text}, {Text, Picture}),
-    OrientationClass = "orientation-" ++ wf:to_list(Orientation),
     HideMobileClass = "is-hidden-touch",
     {LeftHide, RightHide} = ?WF_IF(Orientation==left, {HideMobileClass, ""}, {"", HideMobileClass}),
 
-    #panel{class=[columns, "is-vcentered", OrientationClass], body=[
+    #panel{class=[columns, OrientationClass, "is-vcentered"], body=[
         #panel{class=[BaseClass, "is-hidden-desktop"], body=Picture},
         #panel{class=[BaseClass, LeftHide], body=Left},
         #panel{class=[BaseClass, RightHide], body=Right}
     ]}.
 
 
-
-section_class() ->
-    Num = blast_common:get_counter(1, 5),
-    "section-" ++ wf:to_list(Num).
+section_classes() ->
+    blast_common:section_classes(page()).
 
 navbar() ->
     Page = page(),

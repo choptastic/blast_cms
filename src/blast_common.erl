@@ -30,6 +30,9 @@ content_dir_url() ->
 content_dir_url(Page) ->
     content_dir_url() ++ Page ++ "/".
 
+site_css() ->
+    content_dir_url() ++ "site.css".
+
 config_path(Page) ->
     File = "page.config",
     filename:join([content_dir(Page), File]).
@@ -60,16 +63,14 @@ orientation() ->
     erlang:put(page_orientation_left, NewLeft),
     ?WF_IF(Left, left, right).
 
-get_counter(Min, Max) ->
-    Counter = case erlang:get(page_counter) of
-        undefined -> Min;
-        X when X == Max -> Max;
-        X when X > Max -> Min;
-        X when X < Min -> Min;
+get_class_counter() ->
+    Counter = case erlang:get(page_class_counter) of
+        undefined -> 1;
+        X when X < 1 -> 1;
         X -> X
     end,
     NextCounter = Counter+1,
-    erlang:put(page_counter, NextCounter),
+    erlang:put(page_class_counter, NextCounter),
     Counter.
 
 page() ->
@@ -106,6 +107,18 @@ site_config(Key) ->
 site_config(Key, Default) ->
     Config = site_config(),
     ds:get(Config, Key, Default).
+
+
+section_classes(_Page) ->
+    SectionClasses = site_config(section_classes, []),
+    ClassCycleNum = get_class_counter(),
+    lists:map(fun({ClassPrefix, Max}) ->
+        ClassNum = case ClassCycleNum rem Max of
+            0 -> Max;
+            Num -> Num
+        end,
+        wf:to_binary([ClassPrefix,"-",ClassNum])
+    end, SectionClasses).
 
 sections(Page) ->
     page_config(Page, sections, []).
