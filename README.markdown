@@ -2,12 +2,34 @@
 
 A simple Nitrogen-based site generator for quickly building simple sites 
 
-Use
----
+## Step 0: Create a Nitrogen App
 
-Add the plugin to your rebar config:
+Start with a [Nitrogen](https://nitrogenproject.com) App.
+
+## Step 1: Add dependency
+
+Add it to the dependencies of a Nitrogen application.
+
+Edit your rebar config to add
 
 {deps, [
 	blast_cms
 ]}.
+
+## Step 2: Update configuration
+
+Set up configuration to ave your 404 pages be handled by Blast.
+
+## Step 3: Add your site configuration
+
+* site.config
+* Site name
+* Default Logo
+* Main Menu items
+
+## Step 4: Add pages
+
+* Create directory
+* Add page.config
+* define sections
 
