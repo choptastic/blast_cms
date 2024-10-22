@@ -135,6 +135,13 @@ section_classes(_Page) ->
 sections(Page) ->
     page_config(Page, sections, []).
 
+title() ->
+    Page = blast_basic:page(),
+    PageTitle = title(Page),
+    SiteTitle = site_title(),
+    [PageTitle, " | ", SiteTitle].
+    
+
 title(Page) ->
     page_config(Page, title).
 
