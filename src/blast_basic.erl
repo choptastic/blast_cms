@@ -1,5 +1,5 @@
 %% vim: ft=nitrogen
-%% Copyright 2023 Jesse Gumm
+%% Copyright 2023-2024 Jesse Gumm
 %% MIT License
 -module(blast_basic).
 -include("blast.hrl").
@@ -40,9 +40,15 @@ body() ->
     Sections = blast_common:sections(Page),
     [draw_section(Page, Section) || Section <- Sections].
 
-draw_section(Page, Section) ->
+
+draw_section(Page, Section) when is_atom(Section) ->
+    draw_section(Page, {Section, Section});
+draw_section(Page, Section) when is_map(Section) ->
+    ID = ds:get(Section, id),
+    draw_section(Page, {ID, Section});
+draw_section(Page, {Sectionid, Section})  ->
     #section{
-        html_id=Section,
+        html_id=Sectionid,
         class=[section, section_classes()],
         body=[
             #panel{class=container, body=[
@@ -51,28 +57,80 @@ draw_section(Page, Section) ->
         ]
     }.
     
-content(Page, Section) ->
-    Orientation = blast_common:orientation(),
+content(Page, Section) when is_atom(Section) ->
     File = blast_common:content_path(Page, Section),
-    Picture = case blast_common:content_image_url(Page, Section) of
-        undefined -> "";
-        Url -> #image{image=Url}
+    {HasPic, Picture} = case blast_common:content_image_url(Page, Section) of
+        undefined -> {false, ""};
+        Url -> {true, #image{image=Url}}
     end,
-    
-    Text = #template{file=File, from_type=gfm, to_type=html},
 
-    BaseClass = "column is-half home-details",
+    Orientation = ?WF_IF(HasPic, blast_common:orientation(), full),
 
     OrientationClass = wf:to_binary(["orientation-",Orientation]),
-    {Left, Right} = ?WF_IF(Orientation==left, {Picture, Text}, {Text, Picture}),
-    HideMobileClass = "is-hidden-touch",
-    {LeftHide, RightHide} = ?WF_IF(Orientation==left, {HideMobileClass, ""}, {"", HideMobileClass}),
+    
+    Text = #template{file=File, from_type=gfm, to_type=html},
+    
+    BaseClass0 = [column, 'home-details'],
 
-    #panel{class=[columns, OrientationClass, "is-vcentered"], body=[
-        #panel{class=[BaseClass, "is-hidden-desktop"], body=Picture},
-        #panel{class=[BaseClass, LeftHide], body=Left},
-        #panel{class=[BaseClass, RightHide], body=Right}
+    case Orientation of
+        full ->
+            BaseClass = [BaseClass0, 'is-full'],
+            #panel{class=[columns, OrientationClass, "is-vcentered"], body=[
+                #panel{class=[BaseClass], body=Text}
+            ]};
+        _ ->
+            BaseClass = [BaseClass0, 'is-half'],
+
+            {Left, Right} = ?WF_IF(Orientation==left, {Picture, Text}, {Text, Picture}),
+            HideMobileClass = "is-hidden-touch",
+            {LeftHide, RightHide} = ?WF_IF(Orientation==left, {HideMobileClass, ""}, {"", HideMobileClass}),
+
+            #panel{class=[columns, OrientationClass, "is-vcentered"], body=[
+                #panel{class=[BaseClass, "is-hidden-desktop"], body=Picture},
+                #panel{class=[BaseClass, LeftHide], body=Left},
+                #panel{class=[BaseClass, RightHide], body=Right}
+            ]}
+    end;
+
+content(Page, Columns) when is_list(Columns) ->
+    content(Page, #{columns=>Columns});
+
+content(Page, Section) when is_map(Section) ->
+    [ID, Columns, Class] = ds:get_list(Section, [id, columns, class]),
+    NumColumns = length(Columns),
+    BaseClass = [column, 'home-details', ratio_class(NumColumns)],
+    #panel{html_id=ID, class=[columns, Class], body=[
+        [content_item(Page, BaseClass, C) || C <- Columns]
     ]}.
+
+ratio_class(1) ->
+    'is-full';
+ratio_class(2) ->
+    'is-half';
+ratio_class(3) ->
+    'is-one-third';
+ratio_class(4) ->
+    'is-one-quarter';
+ratio_class(5) ->
+    'is-one-fifth';
+ratio_class(6) ->
+    'is-2';
+ratio_class(_) ->
+    'is-1'.
+
+content_item(Page, BaseClass, Column) ->
+    #panel{class=BaseClass, body=guess_and_process_content(Page, Column)}.
+
+guess_and_process_content(Page, Column) ->
+    case blast_common:content_guess(Page, Column) of
+        {markdown, File} ->
+            #template{file=File, from_type=gfm, to_type=html};
+        {image, File} ->
+            #image{image=File};
+        undefined ->
+            ""
+    end.
+    
 
 
 section_classes() ->

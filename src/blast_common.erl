@@ -41,12 +41,24 @@ site_config_path() ->
     File = "site.config",
     filename:join([content_dir(), File]).
 
+content_guess(Page, Content) when is_atom(Content) ->
+    MD = content_path(Page, Content),
+    case filelib:is_file(MD) of
+        true -> {markdown, MD};
+        false ->
+            case content_image_url(Page, Content) of
+                undefined -> undefined;
+                Image -> {image, Image}
+            end
+    end.
+    
+
 content_path(Page, Content) ->
     File = wf:to_list(Content) ++ ".md",
     filename:join([content_dir(Page), File]).
 
 content_image_url(Page, Content) ->
-    Wildcard = wf:to_list(Content) ++ ".{png,jpg,jpeg,gif,webp}",
+    Wildcard = wf:to_list(Content) ++ ".{png,jpg,jpeg,gif,webp,svg}",
     Cwd = content_dir(Page),
     case filelib:wildcard(Wildcard, Cwd) of
         [] -> undefined;
@@ -145,6 +157,20 @@ site_title() ->
 
 site_logo() ->
     site_config(logo, undefined).
+
+copyright_path() ->
+    case site_config(copyright, undefined) of
+        undefined -> undefined;
+        X -> filename:join([content_dir(), X])
+    end.
+
+copyright() ->
+    File = copyright_path(),
+    case filelib:is_file(File) of
+        false -> "";
+        true ->
+            #template{file=File, from_type=gfm, to_type=html}
+    end.
 
 menu_items(Page) ->
     case page_menu_items(Page) of

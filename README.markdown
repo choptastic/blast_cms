@@ -18,7 +18,13 @@ Edit your rebar config to add
 
 ## Step 2: Update configuration
 
-Set up configuration to ave your 404 pages be handled by Blast.
+Set up configuration to have your 404 pages be handled by `blast_basic`:
+
+Edit the `etc/app.config` file and add the following under the `nitrogen_core` key:
+
+```
+{file_not_found_module, blast_basic}
+```
 
 ## Step 3: Add your site configuration
 
