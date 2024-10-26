@@ -5,6 +5,11 @@ A simple Nitrogen-based site generator for quickly building simple sites
 ## TODO
 
 * Make an install script that does all of the below automatically
+* Add support for drop-down submenus
+* Add support for callouts to module functions in the `sections`, for example:
+  `{callout, {module, function, Args}}`
+* Add support for JSON-style configuration (for those who might not want to use
+  Erlang)
 
 ## Step 0: Create a Nitrogen App
 
