@@ -2,6 +2,10 @@
 
 A simple Nitrogen-based site generator for quickly building simple sites 
 
+## TODO
+
+* Make an install script that does all of the below automatically
+
 ## Step 0: Create a Nitrogen App
 
 Start with a [Nitrogen](https://nitrogenproject.com) App.
