@@ -51,7 +51,6 @@ content_guess(Page, Content) when is_atom(Content) ->
                 Image -> {image, Image}
             end
     end.
-    
 
 content_path(Page, Content) ->
     File = wf:to_list(Content) ++ ".md",
@@ -135,6 +134,21 @@ section_classes(_Page) ->
 sections(Page) ->
     page_config(Page, sections, []).
 
+navbar_layout(Page) ->
+    validate_navbar_layout(site_config(navbar_layout)).
+
+validate_navbar_layout([logo, menu | _]) ->
+    [logo, menu, space];
+validate_navbar_layout([logo, space, menu]) ->
+    [logo, space, menu];
+validate_navbar_layout([menu, space, logo]) ->
+    [menu, space, logo];
+validate_navbar_layout([space, menu, logo]) ->
+    [space, menu, logo];
+validate_navbar_layout(X) ->
+    logger:warning("navbar_layout with value ~p is unvalid.", [X]).
+
+
 title() ->
     Page = blast_basic:page(),
     PageTitle = title(Page),
@@ -152,6 +166,12 @@ logo(Page) ->
         Logo ->
             Logo
     end.
+
+max_logo_height() ->
+    wf:to_list(site_config(max_logo_height, 200)).
+
+min_logo_height() ->
+    wf:to_list(site_config(min_logo_height, 60)).
 
 page_menu_items(Page) ->
     page_config(Page, menu, undefined).

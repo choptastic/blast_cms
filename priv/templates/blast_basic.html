@@ -15,7 +15,6 @@
 	<!--<link rel="stylesheet" href="/nitrogen/nitrogen.css" />-->
 	<!--<link rel="stylesheet" href="/css/style.css" />-->
     <link rel="stylesheet" href="/plugins/blast_cms/bulma.min.css">
-    <link rel="stylesheet" href="[[[blast_common:site_css()]]]">
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -62,7 +61,7 @@
 			}
 
 			.navbar-logo.navbar-item {
-				height: 200px;
+				height: [[[blast_common:max_logo_height()]]]px;
 			}
 
 			.navbar-logo.navbar-item img {
@@ -79,18 +78,8 @@
 			text-align:center;
 		}
 		
-		/*
-        .navbar-logo.large {
-            height: 200px;
-            transition: max-height 0.5s;
-        }
-
-        .navbar-logo.small {
-            height: 60px;
-            transition: max-height 0.5s;
-        }
-		*/
     </style>
+    <link rel="stylesheet" href="[[[blast_common:site_css()]]]">
 </head>
 <body>
 
@@ -117,8 +106,8 @@
 			const scrollPosition = window.scrollY;
 
 			// You can adjust the max and min heights as needed
-			const maxLogoHeight = 200;
-			const minLogoHeight = 60;
+			const maxLogoHeight = [[[blast_common:max_logo_height()]]];
+			const minLogoHeight = [[[blast_common:min_logo_height()]]];
 
 			// Calculate the new logo height based on scroll position
 			const newHeight = maxLogoHeight - scrollPosition;

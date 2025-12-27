@@ -130,7 +130,6 @@ guess_and_process_content(Page, Column) ->
         undefined ->
             ""
     end.
-    
 
 
 section_classes() ->
@@ -139,26 +138,45 @@ section_classes() ->
 navbar() ->
     Page = page(),
     Items = blast_common:menu_items(Page),
+    NavbarLayout = blast_common:navbar_layout(Page),
+
+    MenuEndClass = ?WF_IF(lists:last(NavbarLayout)==menu, "navbar-end", ""),
+    LogoEndClass = ?WF_IF(lists:last(NavbarLayout)==logo, "navbar-end", ""),
+    MenuStartClass = ?WF_IF(hd(NavbarLayout)==menu, "navbar-start", ""),
+    LogoStartClass = ?WF_IF(hd(NavbarLayout)==logo, "navbar-start", ""),
+    MenuClass = [MenuEndClass, MenuStartClass],
+    LogoClass = [LogoEndClass, LogoStartClass],
+    Logo = #panel{class=["navbar-brand", LogoClass], body=[
+        #link{
+            class=["navbar-item", "navbar-logo", large],
+            url="#",
+            body=logo()
+        },
+        ?WF_IF(not(?WF_BLANK(Items)), blast_common:menu_hamburger())
+    ]},
+
+    Menu = #panel{class=["navbar-menu"], html_id="navbarMenu", body=[
+        #panel{class=MenuClass, body=[
+            draw_menu_items(Items)
+        ]}
+    ]},
+
+    First = hd(NavbarLayout),
+    NavbarBody = case First of
+        logo ->
+            [Logo, Menu];
+        _ ->
+            [Menu, Logo]
+    end,
     #nav{
         class=[navbar, "is-fixed-top"],
         role=navigation,
         aria=[{label, "main navigation"}],
         body=[
-            #panel{class=["navbar-brand"], body=[
-                #link{
-                    class=["navbar-item", "navbar-logo", large],
-                    url="#",
-                    body=logo()
-                },
-                ?WF_IF(not(?WF_BLANK(Items)), blast_common:menu_hamburger())
-            ]},
-            #panel{class=["navbar-menu"], html_id="navbarMenu", body=[
-                #panel{class="navbar-end", body=[
-                    draw_menu_items(Items)
-                ]}
-            ]}
+            NavbarBody
         ]
     }.
+    
 
 draw_menu_items(Items) ->
     [draw_menu_item(I) || I <- Items].
