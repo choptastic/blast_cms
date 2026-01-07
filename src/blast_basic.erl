@@ -140,12 +140,8 @@ navbar() ->
     Items = blast_common:menu_items(Page),
     NavbarLayout = blast_common:navbar_layout(Page),
 
-    MenuEndClass = ?WF_IF(lists:last(NavbarLayout)==menu, "navbar-end", ""),
-    LogoEndClass = ?WF_IF(lists:last(NavbarLayout)==logo, "navbar-end", ""),
-    MenuStartClass = ?WF_IF(hd(NavbarLayout)==menu, "navbar-start", ""),
-    LogoStartClass = ?WF_IF(hd(NavbarLayout)==logo, "navbar-start", ""),
-    MenuClass = [MenuEndClass, MenuStartClass],
-    LogoClass = [LogoEndClass, LogoStartClass],
+    {LogoClass, MenuClass} = logo_menu_class(NavbarLayout),
+
     Logo = #panel{class=["navbar-brand", LogoClass], body=[
         #link{
             class=["navbar-item", "navbar-logo", large],
@@ -155,28 +151,45 @@ navbar() ->
         ?WF_IF(not(?WF_BLANK(Items)), blast_common:menu_hamburger())
     ]},
 
+
     Menu = #panel{class=["navbar-menu"], html_id="navbarMenu", body=[
         #panel{class=MenuClass, body=[
             draw_menu_items(Items)
         ]}
     ]},
 
-    First = hd(NavbarLayout),
-    NavbarBody = case First of
-        logo ->
-            [Logo, Menu];
-        _ ->
-            [Menu, Logo]
+    NavbarBody = orient_logo_menu(NavbarLayout, Logo, Menu),
+
+    ContentBody = case blast_common:navbar_content_width(Page) of
+        full ->
+            NavbarBody;
+        content ->
+            #panel{class=container, body=NavbarBody}
     end,
+                
+
     #nav{
         class=[navbar, "is-fixed-top"],
         role=navigation,
         aria=[{label, "main navigation"}],
         body=[
-            NavbarBody
+            ContentBody
         ]
     }.
-    
+
+logo_menu_class([space, _, _]) ->
+    {"navbar-end", "navbar-end"};
+logo_menu_class([_, _, space]) ->
+    {"navbar-start", "navbar-start"};
+logo_menu_class([menu, _, logo]) ->
+    {"navbar-end", "navbar-start"};
+logo_menu_class([logo, _, menu]) ->
+    {"navbar-start", "navbar-end"}.
+
+orient_logo_menu(NavbarLayout, Logo, Menu) ->
+    MenuIndex = wf_utils:indexof(menu, NavbarLayout),
+    LogoIndex = wf_utils:indexof(logo, NavbarLayout),
+    ?WF_IF(LogoIndex < MenuIndex, [Logo, Menu], [Menu, Logo]).
 
 draw_menu_items(Items) ->
     [draw_menu_item(I) || I <- Items].

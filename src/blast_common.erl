@@ -134,8 +134,19 @@ section_classes(_Page) ->
 sections(Page) ->
     page_config(Page, sections, []).
 
-navbar_layout(Page) ->
+navbar_layout(_Page) ->
     validate_navbar_layout(site_config(navbar_layout)).
+
+navbar_content_width(_Page) ->
+    validate_navbar_content_width(site_config(navbar_content_width)).
+
+validate_navbar_content_width(full) ->
+    full;
+validate_navbar_content_width(content) ->
+    content;
+validate_navbar_content_width(Other) ->
+    logger:warning("navbar_content_width is invalid. Current: ~p. Expected: 'content' or 'full'", [Other]),
+    full.
 
 validate_navbar_layout([logo, menu | _]) ->
     [logo, menu, space];
@@ -146,7 +157,8 @@ validate_navbar_layout([menu, space, logo]) ->
 validate_navbar_layout([space, menu, logo]) ->
     [space, menu, logo];
 validate_navbar_layout(X) ->
-    logger:warning("navbar_layout with value ~p is unvalid.", [X]).
+    logger:warning("navbar_layout with value ~p is unvalid.", [X]),
+    [logo, space, menu].
 
 
 title() ->
